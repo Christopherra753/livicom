@@ -11,7 +11,7 @@ export function Navigation () {
   const [showCart, setShowCart] = useState(false)
 
   return (
-    <nav className='shadow fixed top-0 w-full z-20 bg-white'>
+    <nav className='shadow fixed top-0 w-full z-30 bg-white'>
       <div className='max-w-screen-xl flex flex-wrap items-center justify-between mx-auto px-10 h-20'>
         <NavLink to='/' className=''>
           <img src={LogoIMG} className='h-20 w-20' alt='Livicom' />
@@ -20,7 +20,7 @@ export function Navigation () {
           <span className='sr-only'>Open main menu</span>
           <BiMenu className='text-8xl' />
         </button>
-        <div className='hidden w-full md:block md:w-auto'>
+        <div className='w-full md:block md:w-auto'>
           <ul className='font-medium flex flex-col p-4 md:p-0 mt-4 border border-gray-100 rounded-lg bg-gray-50 md:flex-row md:space-x-8 md:mt-0 md:border-0 md:bg-white dark:bg-gray-800 md:dark:bg-gray-900 dark:border-gray-700'>
             <li>
               <NavLink to='/about' className='block py-2 pl-3 pr-4 text-white bg-blue-700 rounded md:bg-transparent md:text-blue-700 md:p-0 dark:text-white md:dark:text-blue-500' aria-current='page'>Nosotros</NavLink>
@@ -35,7 +35,7 @@ export function Navigation () {
             {
               user
                 ? (
-                    user.rol_id === 1
+                    user.rol === 'admin'
                       ? (
                         <>
                           <li>

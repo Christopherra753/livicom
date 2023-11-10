@@ -1,20 +1,30 @@
-import { useContext } from 'react'
+import { useContext, useEffect, useState } from 'react'
 import { ShopContext } from '../context/shop'
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js'
 import { Pie } from 'react-chartjs-2'
-import { CATEGORIES } from '../constants/categories'
+import { Title } from '../Layout/Title'
+import axios from 'axios'
 
 ChartJS.register(ArcElement, Tooltip, Legend)
 
 export function DashboardHome () {
   const { products } = useContext(ShopContext)
+  const [categories, setCategories] = useState([])
+
+  useEffect(() => {
+    const getCategories = async () => {
+      const data = await axios.get('http://localhost:3000/get-categories')
+      setCategories(data.data)
+    }
+    getCategories()
+  }, [])
 
   const data = {
-    labels: CATEGORIES.map(category => category.description),
+    labels: categories.map(category => category.name),
     datasets: [
       {
         label: 'Productos: ',
-        data: CATEGORIES.map(category => {
+        data: categories.map(category => {
           const totalProducts = products.filter(product => product.category === category.id).length
           return totalProducts
         }),
@@ -40,8 +50,9 @@ export function DashboardHome () {
   }
 
   return (
-    <div className='mx-auto px-4 sm:px-6 max-w-3xl lg:px-8'>
-      <h1 className='text-4xl text-center font-bold text-gray-800 mb-5'>Reportes</h1>
+    <div className='max-w-2xl mx-auto'>
+      <Title name='Reportes' />
+      <p className='text-center text-gray-700 font-semibold'>Relacion de la cantidad de productos por categoria</p>
       <Pie data={data} />
     </div>
   )

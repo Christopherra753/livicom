@@ -1,33 +1,42 @@
-import { useContext, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { BiEdit, BiPlus, BiSearch, BiTrash, BiX } from 'react-icons/bi'
-import { ShopContext } from '../context/shop'
+
 import Swal from 'sweetalert2'
+import { Title } from '../Layout/Title'
+import axios from 'axios'
 
 export function DashboardUsers () {
-  const { users, setUsers } = useContext(ShopContext)
   const [createModal, setCreateModal] = useState(false)
   const [editModal, setEditModal] = useState(false)
   const [editUser, setEditUser] = useState({})
 
-  const handleSubmit = (event) => {
+  const [search, setSearch] = useState('')
+  const [users, setUsers] = useState([])
+
+  const searchedUsers = search
+    ? [...users].filter(user => user.name.toLowerCase().includes(search.toLowerCase()))
+    : [...users]
+
+  const handleSubmit = async (event) => {
     event.preventDefault()
     const form = event.target
     const formData = new FormData(form)
-    const data = Object.fromEntries(formData)
+    const user = Object.fromEntries(formData)
+    console.log(user)
 
-    data.id = crypto.randomUUID()
-    data.rol_id = Number(data.rol_id)
+    const data = await axios.post('http://localhost:3000/create-user', user)
 
-    const newUsers = [...users, data]
-    setUsers(newUsers)
+    if (data.data.id) {
+      Swal.fire({
+        title: 'Registro',
+        text: 'El usuario de registro correctamente',
+        icon: 'success',
+        timer: 1500
+      })
+    }
     setCreateModal(false)
-
-    Swal.fire({
-      title: 'Registro',
-      text: 'El usuario de registro correctamente',
-      icon: 'success',
-      timer: 1500
-    })
+    const data3 = await axios.get('http://localhost:3000/get-users')
+    setUsers(data3.data)
   }
 
   const handleDelete = (id) => {
@@ -37,10 +46,11 @@ export function DashboardUsers () {
       icon: 'warning',
       showCancelButton: true,
       confirmButtonText: 'Eliminar'
-    }).then((result) => {
+    }).then(async (result) => {
       if (result.isConfirmed) {
-        const newUsers = [...users].filter(user => user.id !== id)
-        setUsers(newUsers)
+        await axios.post('http://localhost:3000/delete-user', { id })
+        const data = await axios.get('http://localhost:3000/get-users')
+        setUsers(data.data)
         Swal.fire(
           'Eliminar',
           'Se elimino el usuario correctamente',
@@ -56,19 +66,13 @@ export function DashboardUsers () {
     setEditUser(auxiliarUser)
   }
 
-  const handleUpdate = (event) => {
+  const handleUpdate = async (event) => {
     event.preventDefault()
     const form = event.target
     const formData = new FormData(form)
-    const data = Object.fromEntries(formData)
+    const user = Object.fromEntries(formData)
 
-    data.rol_id = Number(data.rol_id)
-
-    const newUsers = [...users]
-    const foundIndexUser = newUsers.findIndex(user => user.id === editUser.id)
-
-    newUsers[foundIndexUser] = { ...newUsers[foundIndexUser], ...data }
-    setUsers(newUsers)
+    await axios.post('http://localhost:3000/update-user', { id: editUser.id, ...user })
 
     Swal.fire({
       title: 'Actualizar',
@@ -79,6 +83,9 @@ export function DashboardUsers () {
 
     setEditModal(false)
     setEditUser({})
+
+    const data3 = await axios.get('http://localhost:3000/get-users')
+    setUsers(data3.data)
   }
 
   const handleCloseUpdate = () => {
@@ -86,8 +93,17 @@ export function DashboardUsers () {
     setEditUser({})
   }
 
+  useEffect(() => {
+    const getUsers = async () => {
+      const data = await axios.get('http://localhost:3000/get-users')
+      setUsers(data.data)
+    }
+    getUsers()
+  }, [])
+
   return (
     <div>
+      <Title name='Apartado de Usuarios' />
       <section className='p-3 sm:p-5 antialiased'>
         <div className='mx-auto max-w-screen-xl px-4 lg:px-12'>
           <div className='bg-white  relative shadow-md sm:rounded-lg overflow-hidden'>
@@ -102,6 +118,8 @@ export function DashboardUsers () {
                       <BiSearch className='w-5 h-5 text-gray-500 dark:text-gray-400' />
                     </div>
                     <input
+                      onChange={(e) => setSearch(e.target.value)}
+                      value={search}
                       type='text'
                       id='simple-search'
                       className=' focus:outline-none bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full pl-10 p-2 '
@@ -145,7 +163,7 @@ export function DashboardUsers () {
                   </tr>
                 </thead>
                 <tbody>
-                  {users.map((user) => (
+                  {searchedUsers.map((user) => (
                     <tr className='border-b ' key={user.id}>
                       <th
                         scope='row'
@@ -185,7 +203,7 @@ export function DashboardUsers () {
       {createModal && (
         <div
           id='createProductModal'
-          className=' overflow-y-auto overflow-x-hidden fixed top-0 right-0 flex left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full'
+          className='overflow-y-auto overflow-x-hidden fixed top-0 right-0 flex left-0 z-50 xl:left-40 justify-center bg-black/50 items-center w-full md:inset-0 h-full'
         >
           <div className='relative p-4 w-full max-w-2xl max-h-full'>
             <div className='relative p-4 bg-white rounded-lg shadow dark:bg-gray-800 sm:p-5'>
@@ -277,11 +295,11 @@ export function DashboardUsers () {
                     </label>
                     <select
                       id='rol_id'
-                      name='rol_id'
+                      name='rol'
                       className='bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500'
                     >
-                      <option className='text-white' value={1}>Administrador</option>
-                      <option className='text-white' value={2}>Usuario</option>
+                      <option className='text-white' value='admin'>Administrador</option>
+                      <option className='text-white' value='user'>Usuario</option>
                     </select>
                   </div>
                   <div>
@@ -333,7 +351,7 @@ export function DashboardUsers () {
       {
         editModal && (
           <div
-            className='overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 flex justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full'
+            className='overflow-y-auto overflow-x-hidden fixed top-0 right-0 flex left-0 z-50 xl:left-40 justify-center bg-black/50 items-center w-full md:inset-0 h-full'
           >
             <div className='relative p-4 w-full max-w-2xl max-h-full'>
               <div className='relative p-4 bg-white rounded-lg shadow dark:bg-gray-800 sm:p-5'>
@@ -430,12 +448,12 @@ export function DashboardUsers () {
                       </label>
                       <select
                         id='rol_id'
-                        name='rol_id'
-                        defaultValue={editUser.rol_id}
+                        name='rol'
+                        defaultValue={editUser.rol}
                         className='bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500'
                       >
-                        <option className='text-white' value={1}>Administrador</option>
-                        <option className='text-white' value={2}>Usuario</option>
+                        <option className='text-white' value='admin'>Administrador</option>
+                        <option className='text-white' value='user'>Usuario</option>
                       </select>
                     </div>
                     <div>
@@ -455,23 +473,7 @@ export function DashboardUsers () {
                         required=''
                       />
                     </div>
-                    <div>
-                      <label
-                        htmlFor='password'
-                        className='block mb-2 text-sm font-medium text-gray-900 dark:text-white'
-                      >
-                        Contraseña
-                      </label>
-                      <input
-                        type='password'
-                        name='password'
-                        id='password'
-                        defaultValue={editUser.password}
-                        className='bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500'
-                        placeholder='Ingrese una contraseña'
-                        required=''
-                      />
-                    </div>
+
                   </div>
                   <div className='flex items-center space-x-4'>
                     <button

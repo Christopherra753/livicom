@@ -5,9 +5,10 @@ import { ShopContext } from '../context/shop'
 import { Cartitem } from './Cartitem'
 import Swal from 'sweetalert2'
 import { useNavigate } from 'react-router-dom'
+import axios from 'axios'
 
 export function CartSection ({ setShowCart, showCart }) {
-  const { cart, setCart, products, setProducts, user, setShopping, shopping } = useContext(ShopContext)
+  const { cart, setCart, products, setProducts, user } = useContext(ShopContext)
 
   const navigate = useNavigate()
 
@@ -22,8 +23,9 @@ export function CartSection ({ setShowCart, showCart }) {
 
     // Verificamos si lo encontro
     if (foundIndexCart !== -1) {
-      newCart[foundIndexCart].quantity -= 1
+      newCart[foundIndexCart].amount -= 1
       setCart(newCart)
+      window.localStorage.setItem('cart', JSON.stringify(newCart))
 
       newProducts[foundIndexProduct].stock += 1
       setProducts(newProducts)
@@ -41,7 +43,7 @@ export function CartSection ({ setShowCart, showCart }) {
 
     // Verificamos si lo encontro
     if (foundIndexCart !== -1) {
-      newCart[foundIndexCart].quantity += 1
+      newCart[foundIndexCart].amount += 1
       setCart(newCart)
 
       newProducts[foundIndexProduct].stock -= 1
@@ -49,23 +51,24 @@ export function CartSection ({ setShowCart, showCart }) {
     }
   }
 
-  const deleteProduct = (id, quantity) => {
+  const deleteProduct = (id, amount) => {
     const newCart = [...cart].filter(product => product.id !== id)
     setCart(newCart)
+
     const newProducts = [...products]
     const foundProduct = newProducts.findIndex(product => product.id === id)
     if (foundProduct !== -1) {
-      newProducts[foundProduct].stock += quantity
+      newProducts[foundProduct].stock += amount
       setProducts(newProducts)
     }
   }
 
   const calculateTotal = () => {
-    const total = [...cart].reduce((total, element) => total + (element.price * element.quantity), 0)
+    const total = [...cart].reduce((total, element) => total + (element.price * element.amount), 0)
     return total
   }
 
-  const buyProducts = () => {
+  const buyProducts = async () => {
     if (!user) {
       Swal.fire({
         title: 'Usuario',
@@ -76,12 +79,12 @@ export function CartSection ({ setShowCart, showCart }) {
       return
     }
 
-    const newShopping = { id: crypto.randomUUID(), user, cart }
-    setCart([])
-    const newData = [...shopping, newShopping]
-    setShopping(newData)
+    const data = await axios.post('http://localhost:3000/create-sale', { user_id: user.id })
 
-    setShowCart(false)
+    cart.map(async element => {
+      await axios.post('http://localhost:3000/create-sale-detail', { amount: element.amount, product_id: element.id, sale_id: data.data.id })
+      await axios.post('http://localhost:3000/update-stock', { amount: element.amount, stock: element.stock, product_id: element.id })
+    })
 
     Swal.fire({
       title: 'Compras',
@@ -91,10 +94,12 @@ export function CartSection ({ setShowCart, showCart }) {
     })
 
     navigate('/profile')
+    setShowCart(false)
+    setCart([])
   }
 
   return (
-    <div className={`absolute bg-black/50 top-0 pointer-events-none left-0 w-full h-screen flex justify-end z-50 duration-500 ${showCart ? 'opacity-100 pointer-events-auto' : 'opacity-0'} '`}>
+    <div className={`absolute bg-black/50 top-0 pointer-events-none left-0 w-full h-screen flex justify-end z-40 duration-500 ${showCart ? 'opacity-100 pointer-events-auto' : 'opacity-0'} '`}>
       <div className={`bg-white max-w-md w-full h-screen flex flex-col relative duration-500 ${showCart ? 'translate-x-0' : 'translate-x-full'}`}>
         <Title name='Carrito de Compras' />
         <div className='flex-1 overflow-y-auto border-t border-b border-black'>

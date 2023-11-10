@@ -4,18 +4,17 @@ import { ShopContext } from '../context/shop'
 import Swal from 'sweetalert2'
 
 export function ProductItem ({ product, reduceStock }) {
-  const [quantity, setQuantity] = useState(1)
-
+  const [amount, setAmount] = useState(1)
   const { setCart, cart } = useContext(ShopContext)
 
-  const plusQuantity = () => {
-    if (quantity >= product.stock) return
-    setQuantity(quantity + 1)
+  const plusAmount = () => {
+    if (amount >= product.stock) return
+    setAmount(amount + 1)
   }
 
-  const minusQuantity = () => {
-    if (quantity <= 1) return
-    setQuantity(quantity - 1)
+  const minusAmount = () => {
+    if (amount <= 1) return
+    setAmount(amount - 1)
   }
 
   const buyProduct = () => {
@@ -27,19 +26,20 @@ export function ProductItem ({ product, reduceStock }) {
 
     // Si se encuentra lo actualizamos
     if (foundIndex !== -1) {
-      newCart[foundIndex].quantity += quantity
+      newCart[foundIndex].amount += amount
     } else {
-      newCart.push({ ...product, quantity })
+      newCart.push({ ...product, amount })
     }
 
     // Seteamos el valor del carrito
     setCart(newCart)
+    window.localStorage.setItem('cart', JSON.stringify(newCart))
 
     // Reducimos el stock
-    reduceStock(product.id, quantity)
+    reduceStock(product.id, amount)
 
     // Volvemos al estado inicial de la cantidad
-    setQuantity(1)
+    setAmount(1)
 
     Swal.fire({
       title: 'Producto añadido',
@@ -61,9 +61,9 @@ export function ProductItem ({ product, reduceStock }) {
             <div className='flex justify-between'>
               <p className='text-slate-600 font-medium self-center text-lg'>Precio: <span>S/. {product.price}</span></p>
               <div className='flex items-center self-end border p-1'>
-                <button onClick={plusQuantity} className='px-2'> <BiPlus /> </button>
-                <input readOnly className='w-10  px-2 py-1 text-center outline-none' type='text' value={quantity} />
-                <button onClick={minusQuantity} className='px-2'> <BiMinus /> </button>
+                <button onClick={plusAmount} className='px-2'> <BiPlus /> </button>
+                <input readOnly className='w-10  px-2 py-1 text-center outline-none' type='text' value={amount} />
+                <button onClick={minusAmount} className='px-2'> <BiMinus /> </button>
               </div>
 
             </div>

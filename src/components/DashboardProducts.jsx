@@ -1,35 +1,56 @@
-import { useContext, useState } from 'react'
+import { useContext, useEffect, useState } from 'react'
 import { BiEdit, BiPlus, BiSearch, BiTrash, BiX } from 'react-icons/bi'
-import { ShopContext } from '../context/shop'
-import { CATEGORIES } from '../constants/categories'
+
 import Swal from 'sweetalert2'
+import { Title } from '../Layout/Title'
+import axios from 'axios'
+import { ShopContext } from '../context/shop'
 
 export function DashboardProducts () {
   const { products, setProducts } = useContext(ShopContext)
+
   const [createModal, setCreateModal] = useState(false)
   const [editModal, setEditModal] = useState(false)
   const [editProduct, setEditProduct] = useState({})
 
-  const handleSubmit = (event) => {
+  const [search, setSearch] = useState('')
+
+  const [categories, setCategories] = useState([])
+  useEffect(() => {
+    const getCategories = async () => {
+      const data = await axios.get('http://localhost:3000/get-categories')
+      setCategories(data.data)
+    }
+    getCategories()
+  }, [])
+
+  const searchedProducts = search
+    ? [...products].filter(product => product.name.toLowerCase().includes(search.toLowerCase()))
+    : [...products]
+
+  const handleSubmit = async (event) => {
     event.preventDefault()
     const form = event.target
     const formData = new FormData(form)
-    const data = Object.fromEntries(formData)
+    const newProduct = Object.fromEntries(formData)
 
-    data.id = crypto.randomUUID()
-    data.stock = Number(data.stock)
-    data.category = Number(data.category)
-    data.price = Number(data.price)
-    const newProducts = [...products, data]
-    setProducts(newProducts)
+    newProduct.stock = Number(newProduct.stock)
+    newProduct.category = Number(newProduct.category)
+    newProduct.price = Number(newProduct.price)
+
+    const data = await axios.post('http://localhost:3000/create-product', newProduct)
+
+    if (data.data.id) {
+      Swal.fire({
+        title: 'Registro',
+        text: 'El producto se registro correctamente',
+        icon: 'success',
+        timer: 1500
+      })
+    }
     setCreateModal(false)
-
-    Swal.fire({
-      title: 'Registro',
-      text: 'El producto se registro correctamente',
-      icon: 'success',
-      timer: 1500
-    })
+    const data3 = await axios.get('http://localhost:3000/get-products')
+    setProducts(data3.data)
   }
 
   const handleDelete = (id) => {
@@ -39,10 +60,11 @@ export function DashboardProducts () {
       icon: 'warning',
       showCancelButton: true,
       confirmButtonText: 'Eliminar'
-    }).then((result) => {
+    }).then(async (result) => {
       if (result.isConfirmed) {
-        const newProducts = [...products].filter(product => product.id !== id)
-        setProducts(newProducts)
+        await axios.post('http://localhost:3000/delete-product', { id })
+        const data = await axios.get('http://localhost:3000/get-products')
+        setProducts(data.data)
         Swal.fire(
           'Eliminar',
           'Se elimino el producto correctamente',
@@ -58,21 +80,17 @@ export function DashboardProducts () {
     setEditProduct(auxiliarProduct)
   }
 
-  const handleUpdate = (event) => {
+  const handleUpdate = async (event) => {
     event.preventDefault()
     const form = event.target
     const formData = new FormData(form)
-    const data = Object.fromEntries(formData)
+    const product = Object.fromEntries(formData)
 
-    data.stock = Number(data.stock)
-    data.category = Number(data.category)
-    data.price = Number(data.price)
+    product.stock = Number(product.stock)
+    product.category = Number(product.category)
+    product.price = Number(product.price)
 
-    const newProducts = [...products]
-    const foundIndexProduct = newProducts.findIndex(product => product.id === editProduct.id)
-
-    newProducts[foundIndexProduct] = { ...newProducts[foundIndexProduct], ...data }
-    setProducts(newProducts)
+    await axios.post('http://localhost:3000/update-product', { id: editProduct.id, ...product })
 
     Swal.fire({
       title: 'Actualizar',
@@ -83,6 +101,8 @@ export function DashboardProducts () {
 
     setEditModal(false)
     setEditProduct({})
+    const data = await axios.get('http://localhost:3000/get-products')
+    setProducts(data.data)
   }
 
   const handleCloseUpdate = () => {
@@ -91,7 +111,8 @@ export function DashboardProducts () {
   }
 
   return (
-    <div>
+    <div className=''>
+      <Title name='Apartado de Productos' />
       <section className='p-3 sm:p-5 antialiased'>
         <div className='mx-auto max-w-screen-xl px-4 lg:px-12'>
           <div className='bg-white  relative shadow-md sm:rounded-lg overflow-hidden'>
@@ -106,6 +127,8 @@ export function DashboardProducts () {
                       <BiSearch className='w-5 h-5 text-gray-500 dark:text-gray-400' />
                     </div>
                     <input
+                      onChange={(e) => setSearch(e.target.value)}
+                      value={search}
                       type='text'
                       id='simple-search'
                       className=' focus:outline-none bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full pl-10 p-2 '
@@ -152,7 +175,7 @@ export function DashboardProducts () {
                   </tr>
                 </thead>
                 <tbody>
-                  {products.map((product) => (
+                  {searchedProducts.map((product) => (
                     <tr className='border-b ' key={product.id}>
                       <th
                         scope='row'
@@ -160,7 +183,7 @@ export function DashboardProducts () {
                       >
                         {product.name}
                       </th>
-                      <td className='px-4 py-3'>{product.category}</td>
+                      <td className='px-4 py-3'>{product.category_name}</td>
                       <td className='px-4 py-3'>{product.dimensions}</td>
                       <td className='px-4 py-3'>S/.{product.price}</td>
                       <td className='px-4 py-3'>{product.stock}</td>
@@ -193,7 +216,7 @@ export function DashboardProducts () {
       {createModal && (
         <div
           id='createProductModal'
-          className=' overflow-y-auto overflow-x-hidden fixed top-0 right-0 flex left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full'
+          className='overflow-y-auto overflow-x-hidden fixed top-0 right-0 flex left-0 z-50 xl:left-40 justify-center bg-black/50 items-center w-full md:inset-0 h-full'
         >
           <div className='relative p-4 w-full max-w-2xl max-h-full'>
             <div className='relative p-4 bg-white rounded-lg shadow dark:bg-gray-800 sm:p-5'>
@@ -305,8 +328,8 @@ export function DashboardProducts () {
                       className='bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500'
                     >
                       {
-                        CATEGORIES.map(category => (
-                          <option className='text-white' key={category.id} value={category.id}>{category.description}</option>
+                        categories.map(category => (
+                          <option className='text-white' key={category.id} value={category.id}>{category.name}</option>
                         ))
                       }
                     </select>
@@ -344,7 +367,7 @@ export function DashboardProducts () {
         editModal && (
           <div
             id='updateProductModal'
-            className='overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 flex justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full'
+            className='overflow-y-auto overflow-x-hidden fixed top-0 right-0 flex left-0 z-50 xl:left-40 justify-center bg-black/50 items-center w-full md:inset-0 h-full'
           >
             <div className='relative p-4 w-full max-w-2xl max-h-full'>
               <div className='relative p-4 bg-white rounded-lg shadow dark:bg-gray-800 sm:p-5'>
@@ -459,12 +482,12 @@ export function DashboardProducts () {
                       <select
                         id='category'
                         name='category'
-                        defaultValue={editProduct.category}
+                        defaultValue={editProduct.category_id}
                         className='bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500'
                       >
                         {
-                        CATEGORIES.map(category => (
-                          <option className='text-white' key={category.id} value={category.id}>{category.description}</option>
+                        categories.map(category => (
+                          <option className='text-white' key={category.id} value={category.id}>{category.name}</option>
                         ))
                       }
                       </select>

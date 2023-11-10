@@ -2,42 +2,35 @@ import { useContext } from 'react'
 import { ShopContext } from '../context/shop'
 import Swal from 'sweetalert2'
 import { useNavigate } from 'react-router-dom'
+import axios from 'axios'
 
 export function LoginPage () {
-  const { users, setUser } = useContext(ShopContext)
+  const { setUser } = useContext(ShopContext)
 
   const navigate = useNavigate()
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault()
     const form = event.target
     const formData = new FormData(form)
-    const data = Object.fromEntries(formData)
-    const newUsers = [...users]
+    const user = Object.fromEntries(formData)
 
-    const findUser = newUsers.find(element => element.email === data.email)
+    const data = await axios.post('http://localhost:3000/login', user)
 
-    if (!findUser) {
-      Swal.fire({
+    if (!data.data.result) {
+      return Swal.fire({
         title: 'Login',
-        text: 'El email ingresaso no existe',
+        text: 'Correo o contraseña incorrectos',
         icon: 'warning',
         timer: 1500
       })
-      return
     }
 
-    if (findUser.password !== data.password) {
-      Swal.fire({
-        title: 'Login',
-        text: 'La contraseña es incorrecta, intentelo otra vez',
-        icon: 'warning',
-        timer: 1500
-      })
-      return
-    }
+    const data2 = await axios.post('http://localhost:3000/get-user', { id: data.data.result })
 
-    setUser(findUser)
+    setUser(data2.data)
+
+    window.localStorage.setItem('user', JSON.stringify(data2.data))
 
     Swal.fire({
       title: 'Login',

@@ -2,26 +2,22 @@ import { useContext } from 'react'
 import { ShopContext } from '../context/shop'
 import Swal from 'sweetalert2'
 import { useNavigate } from 'react-router-dom'
+import axios from 'axios'
 
 export function RegisterPage () {
-  const { users, setUsers, setUser } = useContext(ShopContext)
+  const { setUser } = useContext(ShopContext)
 
   const navigate = useNavigate()
 
   const handleSubmit = async (event) => {
-    // Desactivamos la recarga del formulario
     event.preventDefault()
 
-    // Obtenemos los valores del formulario a partir de su name
     const formulario = event.target
     const formData = new FormData(formulario)
 
-    // Aqui ya tenemos en un objeto todos los valores de los inputs
     const newUser = Object.fromEntries(formData)
-
-    // Verificamos si el correo existe
-    const userExists = users.find(user => user.email === newUser.email)
-    if (userExists) {
+    const data = await axios.post('http://localhost:3000/verify-email', { email: newUser.email })
+    if (data.data.result) {
       Swal.fire({
         title: 'Registro',
         text: 'El correo ya existe, escoga otro',
@@ -30,8 +26,6 @@ export function RegisterPage () {
       })
       return
     }
-
-    // Verificar las contraseñas
     if (newUser.password !== newUser.confirm_password) {
       Swal.fire({
         title: 'Registro',
@@ -41,24 +35,12 @@ export function RegisterPage () {
       })
       return
     }
+    const data2 = await axios.post('http://localhost:3000/create-user', { ...newUser, rol: 'user' })
+    const data3 = await axios.post('http://localhost:3000/get-user', { id: data2.data.id })
 
-    // Eliminamos la propiedad de confirmar contraseña
-    delete newUser.confirm_password
+    setUser(data3.data)
+    window.localStorage.setItem('user', JSON.stringify(data3.data))
 
-    // Agregamos la propiedad rol_id = 2 porque son usuarios normales
-    newUser.rol_id = 2
-    newUser.id = crypto.randomUUID()
-
-    // Creamos una nueva variable que almacena los usuarios ya registrados anteriormente y el nuevo
-    const newUsers = [...users, newUser]
-
-    // Seteamos nuestro estado con el nuevo
-    setUsers(newUsers)
-
-    // Como nos registramos tambien queremos logearnos
-    setUser(newUser)
-
-    // Mostramos la confirmacion
     Swal.fire({
       title: 'Registro',
       text: `El usuario '${newUser.name}' fue registrado satisfactoriamente`,
