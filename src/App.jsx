@@ -6,15 +6,16 @@ import { LoginPage } from './pages/LoginPage'
 import { RegisterPage } from './pages/RegisterPage'
 import { NotFoundPage } from './pages/NotFoundPage'
 
-import { Navigation } from './components/Navigation'
+// import { Navigation } from './components/Navigation'
 import { DashboardPage } from './pages/DashboardPage'
 import { ProfilePage } from './pages/ProfilePage'
+import { NavigationRefactor } from './components/NavigationRefactor'
 
 function App () {
   return (
     <BrowserRouter>
 
-      <Navigation />
+      <NavigationRefactor />
 
       <Routes>
         <Route path='/' element={<HomePage />} />
