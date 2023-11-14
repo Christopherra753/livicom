@@ -33,7 +33,6 @@ export function ProductItem ({ product, reduceStock }) {
 
     // Seteamos el valor del carrito
     setCart(newCart)
-    window.localStorage.setItem('cart', JSON.stringify(newCart))
 
     // Reducimos el stock
     reduceStock(product.id, amount)
@@ -67,7 +66,7 @@ export function ProductItem ({ product, reduceStock }) {
               </div>
 
             </div>
-            <button onClick={buyProduct} className='bg-blue-500 text-white w-full py-2 hover:bg-blue-600 duration-150'>Añadir</button>
+            <button onClick={buyProduct} className='bg-shop-200/90 text-white w-full py-2 hover:bg-shop-200 duration-150'>Añadir</button>
           </div>
         </div>
         {

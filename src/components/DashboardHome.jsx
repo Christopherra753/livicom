@@ -25,7 +25,7 @@ export function DashboardHome () {
       {
         label: 'Productos: ',
         data: categories.map(category => {
-          const totalProducts = products.filter(product => product.category === category.id).length
+          const totalProducts = products.filter(product => product.category_id === category.id).length
           return totalProducts
         }),
         backgroundColor: [
@@ -50,10 +50,12 @@ export function DashboardHome () {
   }
 
   return (
-    <div className='max-w-2xl mx-auto'>
+    <div className=''>
       <Title name='Reportes' />
-      <p className='text-center text-gray-700 font-semibold'>Relacion de la cantidad de productos por categoria</p>
-      <Pie data={data} />
+      <div className='w-96 h-96 mx-auto'>
+        <p className='text-center text-gray-700 font-semibold'>Relacion de la cantidad de productos por categoria</p>
+        <Pie className='' data={data} />
+      </div>
     </div>
   )
 }

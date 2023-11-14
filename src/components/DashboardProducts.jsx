@@ -1,57 +1,23 @@
-import { useContext, useEffect, useState } from 'react'
-import { BiEdit, BiPlus, BiSearch, BiTrash, BiX } from 'react-icons/bi'
+import { useContext, useState } from 'react'
 
-import Swal from 'sweetalert2'
-import { Title } from '../Layout/Title'
-import axios from 'axios'
+import { RiAddLine, RiSearch2Line, RiEditBoxLine, RiDeleteBinLine } from 'react-icons/ri'
+
 import { ShopContext } from '../context/shop'
+import { Title } from '../Layout/Title'
 
-export function DashboardProducts () {
+import axios from 'axios'
+import Swal from 'sweetalert2'
+import { CreateProduct } from './Dashboard/CreateProduct'
+import { UpdateProduct } from './Dashboard/UpdateProduct'
+
+export function DashboardProducts ({ setShowModal, showModal }) {
   const { products, setProducts } = useContext(ShopContext)
-
-  const [createModal, setCreateModal] = useState(false)
-  const [editModal, setEditModal] = useState(false)
-  const [editProduct, setEditProduct] = useState({})
-
+  const [editProduct, setEditProduct] = useState(null)
   const [search, setSearch] = useState('')
-
-  const [categories, setCategories] = useState([])
-  useEffect(() => {
-    const getCategories = async () => {
-      const data = await axios.get('http://localhost:3000/get-categories')
-      setCategories(data.data)
-    }
-    getCategories()
-  }, [])
 
   const searchedProducts = search
     ? [...products].filter(product => product.name.toLowerCase().includes(search.toLowerCase()))
     : [...products]
-
-  const handleSubmit = async (event) => {
-    event.preventDefault()
-    const form = event.target
-    const formData = new FormData(form)
-    const newProduct = Object.fromEntries(formData)
-
-    newProduct.stock = Number(newProduct.stock)
-    newProduct.category = Number(newProduct.category)
-    newProduct.price = Number(newProduct.price)
-
-    const data = await axios.post('http://localhost:3000/create-product', newProduct)
-
-    if (data.data.id) {
-      Swal.fire({
-        title: 'Registro',
-        text: 'El producto se registro correctamente',
-        icon: 'success',
-        timer: 1500
-      })
-    }
-    setCreateModal(false)
-    const data3 = await axios.get('http://localhost:3000/get-products')
-    setProducts(data3.data)
-  }
 
   const handleDelete = (id) => {
     Swal.fire({
@@ -75,456 +41,74 @@ export function DashboardProducts () {
   }
 
   const handleEdit = (id) => {
-    setEditModal(true)
+    setShowModal(true)
     const auxiliarProduct = [...products].find(product => product.id === id)
     setEditProduct(auxiliarProduct)
+    const element = document.getElementById('dashboard')
+    element.scrollTo({ top: 0, behavior: 'instant' })
+    console.log(auxiliarProduct)
   }
 
-  const handleUpdate = async (event) => {
-    event.preventDefault()
-    const form = event.target
-    const formData = new FormData(form)
-    const product = Object.fromEntries(formData)
-
-    product.stock = Number(product.stock)
-    product.category = Number(product.category)
-    product.price = Number(product.price)
-
-    await axios.post('http://localhost:3000/update-product', { id: editProduct.id, ...product })
-
-    Swal.fire({
-      title: 'Actualizar',
-      text: 'El producto se actualizo correctamente',
-      icon: 'success',
-      timer: 1500
-    })
-
-    setEditModal(false)
-    setEditProduct({})
-    const data = await axios.get('http://localhost:3000/get-products')
-    setProducts(data.data)
-  }
-
-  const handleCloseUpdate = () => {
-    setEditModal(false)
-    setEditProduct({})
+  const handleAdd = () => {
+    const element = document.getElementById('dashboard')
+    element.scrollTo({ top: 0, behavior: 'instant' })
+    setShowModal(true)
   }
 
   return (
-    <div className=''>
+    <>
       <Title name='Apartado de Productos' />
-      <section className='p-3 sm:p-5 antialiased'>
-        <div className='mx-auto max-w-screen-xl px-4 lg:px-12'>
-          <div className='bg-white  relative shadow-md sm:rounded-lg overflow-hidden'>
-            <div className='flex flex-col md:flex-row items-center justify-between space-y-3 md:space-y-0 md:space-x-4 p-4'>
-              <div className='w-full md:w-1/2'>
-                <form className='flex items-center'>
-                  <label htmlFor='simple-search' className='sr-only'>
-                    Search
-                  </label>
-                  <div className='relative w-full'>
-                    <div className='absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none'>
-                      <BiSearch className='w-5 h-5 text-gray-500 dark:text-gray-400' />
-                    </div>
-                    <input
-                      onChange={(e) => setSearch(e.target.value)}
-                      value={search}
-                      type='text'
-                      id='simple-search'
-                      className=' focus:outline-none bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full pl-10 p-2 '
-                      placeholder='Buscar Productos'
-                      required=''
-                    />
-                  </div>
-                </form>
-              </div>
-              <div className='w-full md:w-auto flex flex-col md:flex-row space-y-2 md:space-y-0 items-stretch md:items-center justify-end md:space-x-3 flex-shrink-0'>
-                <button
-                  onClick={() => setCreateModal(true)}
-                  type='button'
-                  id='createProductModalButton'
-                  className='flex items-center justify-center text-white bg-primary-700 hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 font-medium rounded-lg text-sm px-4 py-2 focus:outline-none bg-black hover:bg-black/80'
-                >
-                  <BiPlus className='h-3.5 w-3.5 mr-2' />
-                  Añadir Producto
-                </button>
-              </div>
-            </div>
-            <div className='overflow-x-auto'>
-              <table className='w-full text-sm text-left text-gray-500 '>
-                <thead className='text-xs text-gray-700 uppercase bg-gray-50 '>
-                  <tr>
-                    <th scope='col' className='px-4 py-4'>
-                      Nombre
-                    </th>
-                    <th scope='col' className='px-4 py-3'>
-                      Categoria
-                    </th>
-                    <th scope='col' className='px-4 py-3'>
-                      Dimensiones
-                    </th>
-                    <th scope='col' className='px-4 py-3'>
-                      Precio
-                    </th>
-                    <th scope='col' className='px-4 py-3'>
-                      Stock
-                    </th>
-                    <th scope='col' className='px-4 py-3'>
-                      Acciones
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {searchedProducts.map((product) => (
-                    <tr className='border-b ' key={product.id}>
-                      <th
-                        scope='row'
-                        className='px-4 py-3 font-medium text-gray-900 whitespace-nowrap '
-                      >
-                        {product.name}
-                      </th>
-                      <td className='px-4 py-3'>{product.category_name}</td>
-                      <td className='px-4 py-3'>{product.dimensions}</td>
-                      <td className='px-4 py-3'>S/.{product.price}</td>
-                      <td className='px-4 py-3'>{product.stock}</td>
-                      <td className='px-4 py-3 flex'>
-                        <button
-                          type='button'
-                          className='flex items-center py-2 px-4 text-blue-600'
-                          onClick={() => handleEdit(product.id)}
-                        >
-                          <BiEdit className='w-4 h-4' />
-                        </button>
-
-                        <button
-                          onClick={() => handleDelete(product.id)}
-                          type='button'
-                          className='flex items-center py-2 px-4 text-red-600 '
-                        >
-                          <BiTrash className='w-4 h-4' />
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
+      <div className='flex flex-col md:flex-row gap-2 justify-between mb-5'>
+        <div className='relative w-full md:w-1/4'>
+          <input onChange={(e) => setSearch(e.target.value)} className='border w-full  pl-9 pr-3 py-2 outline-none rounded-lg' type='text' placeholder='Ingrese el producto a buscar' />
+          <RiSearch2Line className='absolute top-1/2 -translate-y-1/2 left-3' />
         </div>
-      </section>
-
-      {createModal && (
-        <div
-          id='createProductModal'
-          className='overflow-y-auto overflow-x-hidden fixed top-0 right-0 flex left-0 z-50 xl:left-40 justify-center bg-black/50 items-center w-full md:inset-0 h-full'
-        >
-          <div className='relative p-4 w-full max-w-2xl max-h-full'>
-            <div className='relative p-4 bg-white rounded-lg shadow dark:bg-gray-800 sm:p-5'>
-              <div className='flex justify-between items-center pb-4 mb-4 rounded-t border-b sm:mb-5 dark:border-gray-600'>
-                <h3 className='text-lg font-semibold text-gray-900 dark:text-white'>
-                  Añadir Producto
-                </h3>
-                <button
-                  onClick={() => setCreateModal(false)}
-                  type='button'
-                  className='text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-gray-600 dark:hover:text-white'
-                >
-                  <BiX className='w-5 h-5' />
-                </button>
-              </div>
-
-              <form onSubmit={handleSubmit} action='#'>
-                <div className='grid gap-4 mb-4 sm:grid-cols-2'>
-                  <div>
-                    <label
-                      htmlFor='name'
-                      className='block mb-2 text-sm font-medium text-gray-900 dark:text-white'
-                    >
-                      Nombre
-                    </label>
-                    <input
-                      type='text'
-                      name='name'
-                      id='name'
-                      className='bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500'
-                      placeholder='Type product name'
-                      required=''
-                    />
-                  </div>
-                  <div>
-                    <label
-                      htmlFor='dimensions'
-                      className='block mb-2 text-sm font-medium text-gray-900 dark:text-white'
-                    >
-                      Dimensiones
-                    </label>
-                    <input
-                      type='text'
-                      name='dimensions'
-                      id='dimensions'
-                      className='bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500'
-                      placeholder='Product brand'
-                      required=''
-                    />
-                  </div>
-                  <div>
-                    <label
-                      htmlFor='stock'
-                      className='block mb-2 text-sm font-medium text-gray-900 dark:text-white'
-                    >
-                      Stock
-                    </label>
-                    <input
-                      type='text'
-                      name='stock'
-                      id='stock'
-                      className='bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500'
-                      placeholder='Product brand'
-                      required=''
-                    />
-                  </div>
-                  <div>
-                    <label
-                      htmlFor='image'
-                      className='block mb-2 text-sm font-medium text-gray-900 dark:text-white'
-                    >
-                      Imagen
-                    </label>
-                    <input
-                      type='text'
-                      name='image'
-                      id='image'
-                      className='bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500'
-                      placeholder='Product brand'
-                      required=''
-                    />
-                  </div>
-                  <div>
-                    <label
-                      htmlFor='price'
-                      className='block mb-2 text-sm font-medium text-gray-900 dark:text-white'
-                    >
-                      Precio
-                    </label>
-                    <input
-                      type='text'
-                      name='price'
-                      id='price'
-                      className='bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500'
-                      placeholder='$2999'
-                      required=''
-                    />
-                  </div>
-                  <div>
-                    <label
-                      htmlFor='category'
-                      className='block mb-2 text-sm font-medium text-gray-900 dark:text-white'
-                    >
-                      Categoria
-                    </label>
-                    <select
-                      id='category'
-                      name='category'
-                      className='bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500'
-                    >
-                      {
-                        categories.map(category => (
-                          <option className='text-white' key={category.id} value={category.id}>{category.name}</option>
-                        ))
-                      }
-                    </select>
-                  </div>
-                  <div className='sm:col-span-2'>
-                    <label
-                      htmlFor='description'
-                      className='block mb-2 text-sm font-medium text-gray-900 dark:text-white'
-                    >
-                      Description
-                    </label>
-                    <textarea
-                      id='description'
-                      name='description'
-                      rows='4'
-                      className='block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500'
-                      placeholder='Write product description here'
-                    />
-                  </div>
-                </div>
-                <button
-                  type='submit'
-                  className='text-white inline-flex items-center bg-primary-700 hover:bg-primary-800 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800'
-                >
-                  <BiPlus className='mr-1 -ml-1 w-6 h-6' />
-                  Registrar Producto
-                </button>
-              </form>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {
-        editModal && (
-          <div
-            id='updateProductModal'
-            className='overflow-y-auto overflow-x-hidden fixed top-0 right-0 flex left-0 z-50 xl:left-40 justify-center bg-black/50 items-center w-full md:inset-0 h-full'
-          >
-            <div className='relative p-4 w-full max-w-2xl max-h-full'>
-              <div className='relative p-4 bg-white rounded-lg shadow dark:bg-gray-800 sm:p-5'>
-                <div className='flex justify-between items-center pb-4 mb-4 rounded-t border-b sm:mb-5 dark:border-gray-600'>
-                  <h3 className='text-lg font-semibold text-gray-900 dark:text-white'>
-                    Update Product
-                  </h3>
-                  <button
-                    onClick={handleCloseUpdate}
-                    type='button'
-                    className='text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-gray-600 dark:hover:text-white'
+        <button onClick={handleAdd} className='flex items-center gap-2 text-base justify-center bg-shop-200/90 font-semibold hover:bg-shop-200 transition-colors text-white px-4 py-2 rounded-lg '>
+          <RiAddLine className='mt-0.5 text-xl' />
+          Agregar Producto
+        </button>
+      </div>
+      <div className='overflow-x-auto shadow rounded-lg'>
+        <table className='w-full text-xs sm:text-sm md:text-base text-center text-shop-200'>
+          <thead className='text-gray-700 tracking-wider bg-gray-300 '>
+            <tr>
+              <th className='px-4 py-4'>Nombre</th>
+              <th className='px-4 py-3'>Categoria</th>
+              <th className='px-4 py-3'>Dimensiones</th>
+              <th className='px-4 py-3'>Precio</th>
+              <th className='px-4 py-3'>Stock</th>
+              <th className='px-4 py-3'>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            {searchedProducts.map((product) => (
+              <tr className='border-b  hover:bg-gray-100' key={product.id}>
+                <th className='px-4 py-3 min-w-[150px] font-semibold tracking-wide '>{product.name}</th>
+                <td className='px-4 py-3'>{product.category_name}</td>
+                <td className='px-4 py-3'>{product.dimensions}</td>
+                <td className='px-4 py-3'>S/.{product.price}</td>
+                <td className='px-4 py-3'>
+                  <span
+                    className={`${product.stock <= 10 ? 'bg-red-700' : 'bg-green-700'} px-4 py-0.5 rounded-lg font-semibold text-white`}
                   >
-                    <BiX className='w-5 h-5' />
-                    <span className='sr-only'>Close modal</span>
-                  </button>
-                </div>
+                    {product.stock}
+                  </span>
+                </td>
+                <td className='px-4 py-3'>
+                  <RiEditBoxLine className='inline-block w-5 h-5 md:w-7 md:h-7 text-blue-600 cursor-pointer' onClick={() => handleEdit(product.id)} />
+                  <RiDeleteBinLine className='ml-2 inline-block w-5 h-5 md:w-7 md:h-7 text-red-600 cursor-pointer' onClick={() => handleDelete(product.id)} />
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      {
+        showModal === true && editProduct
+          ? (<UpdateProduct setEditProduct={setEditProduct} editProduct={editProduct} setShowModal={setShowModal} />)
+          : (showModal === true && !editProduct) && (<CreateProduct setShowModal={setShowModal} />)
 
-                <form onSubmit={handleUpdate} action='#'>
-                  <div className='grid gap-4 mb-4 sm:grid-cols-2'>
-                    <div>
-                      <label
-                        htmlFor='name'
-                        className='block mb-2 text-sm font-medium text-gray-900 dark:text-white'
-                      >
-                        Nombre
-                      </label>
-                      <input
-                        type='text'
-                        name='name'
-                        id='name'
-                        defaultValue={editProduct.name}
-                        className='bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500'
-                        placeholder='Type product name'
-                        required=''
-                      />
-                    </div>
-                    <div>
-                      <label
-                        htmlFor='dimensions'
-                        className='block mb-2 text-sm font-medium text-gray-900 dark:text-white'
-                      >
-                        Dimensiones
-                      </label>
-                      <input
-                        type='text'
-                        name='dimensions'
-                        id='dimensions'
-                        defaultValue={editProduct.dimensions}
-                        className='bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500'
-                        placeholder='Product brand'
-                        required=''
-                      />
-                    </div>
-                    <div>
-                      <label
-                        htmlFor='stock'
-                        className='block mb-2 text-sm font-medium text-gray-900 dark:text-white'
-                      >
-                        Stock
-                      </label>
-                      <input
-                        type='text'
-                        name='stock'
-                        id='stock'
-                        defaultValue={editProduct.stock}
-                        className='bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500'
-                        placeholder='Product brand'
-                        required=''
-                      />
-                    </div>
-                    <div>
-                      <label
-                        htmlFor='image'
-                        className='block mb-2 text-sm font-medium text-gray-900 dark:text-white'
-                      >
-                        Imagen
-                      </label>
-                      <input
-                        type='text'
-                        name='image'
-                        id='image'
-                        defaultValue={editProduct.image}
-                        className='bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500'
-                        placeholder='Product brand'
-                        required=''
-                      />
-                    </div>
-                    <div>
-                      <label
-                        htmlFor='price'
-                        className='block mb-2 text-sm font-medium text-gray-900 dark:text-white'
-                      >
-                        Precio
-                      </label>
-                      <input
-                        type='text'
-                        name='price'
-                        id='price'
-                        defaultValue={editProduct.price}
-                        className='bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500'
-                        placeholder='$2999'
-                        required=''
-                      />
-                    </div>
-                    <div>
-                      <label
-                        htmlFor='category'
-                        className='block mb-2 text-sm font-medium text-gray-900 dark:text-white'
-                      >
-                        Categoria
-                      </label>
-                      <select
-                        id='category'
-                        name='category'
-                        defaultValue={editProduct.category_id}
-                        className='bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500'
-                      >
-                        {
-                        categories.map(category => (
-                          <option className='text-white' key={category.id} value={category.id}>{category.name}</option>
-                        ))
-                      }
-                      </select>
-                    </div>
-                    <div className='sm:col-span-2'>
-                      <label
-                        htmlFor='description'
-                        className='block mb-2 text-sm font-medium text-gray-900 dark:text-white'
-                      >
-                        Description
-                      </label>
-                      <textarea
-                        id='description'
-                        name='description'
-                        defaultValue={editProduct.description}
-                        rows='4'
-                        className='block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500'
-                        placeholder='Write product description here'
-                      />
-                    </div>
-                  </div>
-                  <div className='flex items-center space-x-4'>
-                    <button
-                      type='submit'
-                      className='text-white bg-primary-700 hover:bg-primary-800 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800'
-                    >
-                      Update product
-                    </button>
-
-                  </div>
-                </form>
-              </div>
-            </div>
-          </div>
-        )
       }
-
-    </div>
+    </>
   )
 }

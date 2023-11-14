@@ -11,9 +11,10 @@ export function ProductPage () {
   const [search, setSearch] = useState('')
   const [categories, setCategories] = useState([])
   const [category, setCategory] = useState('')
+  const [productStock, setProductStock] = useState(false)
   const [price, setPrice] = useState({
     minPrice: 0,
-    maxPrice: 10000
+    maxPrice: 6000
   })
 
   useEffect(() => {
@@ -48,10 +49,14 @@ export function ProductPage () {
 
   const priceProducts = [...categoryProducts].filter(product => product.price >= price.minPrice && product.price <= price.maxPrice)
 
+  const stockProducts = productStock
+    ? [...priceProducts].filter(product => product.stock !== 0)
+    : [...priceProducts]
+
   return (
     <>
-      <div className='bg-white h-screen grid grid-cols-1 xl:grid-cols-10 pt-20'>
-        <div className={`xl:col-span-2 z-20 pt-20 xl:pt-0 overflow-y-auto fixed w-full  h-full ${showMenu ? 'left-0' : '-left-full'} xl:static top-0 px-6 pb-5 border-r bg-white`}>
+      <div className=' h-screen grid grid-cols-1 xl:grid-cols-10 pt-20'>
+        <div className={`xl:col-span-2 z-20 pt-20 xl:pt-0 overflow-y-auto fixed w-full md:w-[50%] xl:w-full h-full ${showMenu ? 'left-0' : '-left-full'} xl:static top-0 px-6 pb-5 border-r bg-white`}>
           <Title name='Filtros' />
           <div className='flex flex-col gap-5'>
             <div>
@@ -89,7 +94,7 @@ export function ProductPage () {
             </div>
             <div>
               <label className='relative inline-flex items-center cursor-pointer'>
-                <input type='checkbox' className='sr-only peer' />
+                <input checked={productStock} onChange={() => setProductStock(!productStock)} type='checkbox' className='sr-only peer' />
                 <div className="w-11 h-6 bg-gray-200 rounded-full peer peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600" />
                 <span className='ml-3 text-sm font-medium text-gray-900 dark:text-gray-300'>En Stock</span>
               </label>
@@ -102,7 +107,7 @@ export function ProductPage () {
             <Title name='Nuestros productos' />
             <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10'>
               {
-            priceProducts.map(product => (
+            stockProducts.map(product => (
               <ProductItem key={product.id} product={product} reduceStock={reduceStock} />
             ))
           }
@@ -110,7 +115,7 @@ export function ProductPage () {
           </div>
         </div>
       </div>
-      <button onClick={() => setShowMenu(!showMenu)} className='bg-black z-50 p-2 xl:hidden rounded-full fixed bottom-10 right-10 hover:bg-black/80'><BiFilterAlt className='text-white text-3xl' /></button>
+      <button onClick={() => setShowMenu(!showMenu)} className='bg-black z-30 p-2 xl:hidden rounded-full fixed bottom-10 right-10 hover:bg-black/80'><BiFilterAlt className='text-white text-3xl' /></button>
     </>
 
   )

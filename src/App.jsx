@@ -8,7 +8,7 @@ import { NotFoundPage } from './pages/NotFoundPage'
 
 // import { Navigation } from './components/Navigation'
 import { DashboardPage } from './pages/DashboardPage'
-import { ProfilePage } from './pages/ProfilePage'
+import { ProfilePageRefactor } from './pages/ProfilePageRefactor'
 import { NavigationRefactor } from './components/NavigationRefactor'
 
 function App () {
@@ -24,7 +24,7 @@ function App () {
         <Route path='/login' element={<LoginPage />} />
         <Route path='/register' element={<RegisterPage />} />
         <Route path='/dashboard/*' element={<DashboardPage />} />
-        <Route path='/profile' element={<ProfilePage />} />
+        <Route path='/profile' element={<ProfilePageRefactor />} />
         <Route path='/*' element={<NotFoundPage />} />
       </Routes>
     </BrowserRouter>
