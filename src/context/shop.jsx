@@ -1,5 +1,6 @@
 import { createContext, useEffect, useState } from 'react'
 import axios from 'axios'
+import { URL } from '../constants/url'
 
 // Crear el contexto
 export const ShopContext = createContext()
@@ -17,7 +18,7 @@ export function ShopProvider ({ children }) {
 
   useEffect(() => {
     const getProducts = async () => {
-      const data = await axios.get('http://localhost:3000/get-products')
+      const data = await axios.get(`${URL}get-products`)
       setProducts(data.data)
     }
     getProducts()

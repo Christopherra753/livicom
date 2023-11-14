@@ -1,6 +1,7 @@
 import axios from 'axios'
 import Swal from 'sweetalert2'
 import { RiAddLine, RiCloseLine } from 'react-icons/ri'
+import { URL } from '../../constants/url'
 
 export function CreateUser ({ setShowModal, setUsers }) {
   const handleSubmit = async (event) => {
@@ -10,7 +11,7 @@ export function CreateUser ({ setShowModal, setUsers }) {
     const user = Object.fromEntries(formData)
     console.log(user)
 
-    const data = await axios.post('http://localhost:3000/create-user', user)
+    const data = await axios.post(`${URL}create-user`, user)
 
     if (data.data.id) {
       Swal.fire({
@@ -22,7 +23,7 @@ export function CreateUser ({ setShowModal, setUsers }) {
     }
     setShowModal(false)
 
-    const data3 = await axios.get('http://localhost:3000/get-users')
+    const data3 = await axios.get(`${URL}get-users`)
     setUsers(data3.data)
   }
 

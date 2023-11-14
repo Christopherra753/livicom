@@ -6,6 +6,7 @@ import { Cartitem } from './Cartitem'
 import Swal from 'sweetalert2'
 import { useNavigate } from 'react-router-dom'
 import axios from 'axios'
+import { URL } from '../constants/url'
 
 export function CartSection ({ setShowCart, showCart }) {
   const { cart, setCart, products, setProducts, user } = useContext(ShopContext)
@@ -79,11 +80,11 @@ export function CartSection ({ setShowCart, showCart }) {
       return
     }
 
-    const data = await axios.post('http://localhost:3000/create-sale', { user_id: user.id })
+    const data = await axios.post(`${URL}create-sale`, { user_id: user.id })
 
     cart.map(async element => {
-      await axios.post('http://localhost:3000/create-sale-detail', { amount: element.amount, product_id: element.id, sale_id: data.data.id })
-      await axios.post('http://localhost:3000/update-stock', { amount: element.amount, stock: element.stock, product_id: element.id })
+      await axios.post(`${URL}create-sale-detail`, { amount: element.amount, product_id: element.id, sale_id: data.data.id })
+      await axios.post(`${URL}update-stock`, { amount: element.amount, stock: element.stock, product_id: element.id })
     })
 
     Swal.fire({

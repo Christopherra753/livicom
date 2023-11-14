@@ -6,6 +6,7 @@ import { RiAddLine, RiDeleteBinLine, RiEditBoxLine, RiSearch2Line } from 'react-
 
 import { CreateUser } from './Dashboard/CreateUser'
 import { UpdateUser } from './Dashboard/UpdateUser'
+import { URL } from '../constants/url'
 
 export function DashboardUsers ({ setShowModal, showModal }) {
   const [users, setUsers] = useState([])
@@ -25,8 +26,8 @@ export function DashboardUsers ({ setShowModal, showModal }) {
       confirmButtonText: 'Eliminar'
     }).then(async (result) => {
       if (result.isConfirmed) {
-        await axios.post('http://localhost:3000/delete-user', { id })
-        const data = await axios.get('http://localhost:3000/get-users')
+        await axios.post(`${URL}delete-user`, { id })
+        const data = await axios.get(`${URL}get-users`)
         setUsers(data.data)
         Swal.fire(
           'Eliminar',
@@ -48,7 +49,7 @@ export function DashboardUsers ({ setShowModal, showModal }) {
 
   useEffect(() => {
     const getUsers = async () => {
-      const data = await axios.get('http://localhost:3000/get-users')
+      const data = await axios.get(`${URL}get-users`)
       setUsers(data.data)
     }
     getUsers()

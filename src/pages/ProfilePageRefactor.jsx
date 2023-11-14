@@ -6,6 +6,7 @@ import { useNavigate } from 'react-router-dom'
 import { Title } from '../Layout/Title'
 
 import axios from 'axios'
+import { URL } from '../constants/url'
 
 export function ProfilePageRefactor () {
   const navigate = useNavigate()
@@ -19,7 +20,7 @@ export function ProfilePageRefactor () {
 
   useEffect(() => {
     const getSalesDetail = async () => {
-      const data = await axios.post('http://localhost:3000/get-sales', { user_id: user.id })
+      const data = await axios.post(`${URL}get-sales`, { user_id: user.id })
       setSales(data.data)
     }
     getSalesDetail()
@@ -31,8 +32,8 @@ export function ProfilePageRefactor () {
     const formData = new FormData(form)
     const userData = Object.fromEntries(formData)
 
-    await axios.post('http://localhost:3000/update-user', { ...userData, id })
-    const updateUser = await axios.post('http://localhost:3000/get-user', { id })
+    await axios.post(`${URL}update-user`, { ...userData, id })
+    const updateUser = await axios.post(`${URL}get-user`, { id })
     setUser(updateUser.data)
     window.localStorage.setItem('user', JSON.stringify(updateUser.data))
 
@@ -78,7 +79,7 @@ export function ProfilePageRefactor () {
               <p>Avatar</p>
             </div>
             <div className='flex-1'>
-              <div className='w-24 h-24 rounded-full flex items-center justify-center text-white text-4xl bg-shop-200'>{user.name[0]}{user.last_name[0]}</div>
+              <div className='w-24 h-24 rounded-full flex items-center tracking-widest justify-center text-white text-4xl bg-shop-200'>{user.name[0]}{user.last_name[0]}</div>
             </div>
           </div>
 
@@ -88,10 +89,10 @@ export function ProfilePageRefactor () {
             </div>
             <div className='flex-1 flex items-center gap-4'>
               <div className='w-full'>
-                <input name='name' defaultValue={user.name} type='text' className='w-full py-2 px-4 outline-none bg-neutral-200 rounded-lg' placeholder='Nombre(s)' />
+                <input name='name' defaultValue={user.name} type='text' className='w-full py-2 px-4 outline-none bg-neutral-100 rounded-lg border-black border' placeholder='Nombre(s)' />
               </div>
               <div className='w-full'>
-                <input name='last_name' defaultValue={user.last_name} type='text' className='w-full py-2 px-4 outline-none bg-neutral-200 rounded-lg' placeholder='Apellido(s)' />
+                <input name='last_name' defaultValue={user.last_name} type='text' className='w-full py-2 px-4 outline-none bg-neutral-100 rounded-lg border-black border' placeholder='Apellido(s)' />
               </div>
             </div>
           </div>
@@ -101,7 +102,7 @@ export function ProfilePageRefactor () {
               <p>Telefono <span className='text-red-500'>*</span></p>
             </div>
             <div className='flex-1 '>
-              <input name='phone' defaultValue={user.phone} type='text' className='w-full py-2 px-4 outline-none bg-neutral-200 rounded-lg' placeholder='Telefono' />
+              <input name='phone' defaultValue={user.phone} type='text' className='w-full py-2 px-4 outline-none bg-neutral-100 rounded-lg border-black border' placeholder='Telefono' />
             </div>
           </div>
 
@@ -110,7 +111,7 @@ export function ProfilePageRefactor () {
               <p>Dirección<span className='text-red-500'>*</span></p>
             </div>
             <div className='flex-1 '>
-              <input name='address' defaultValue={user.address} type='text' className='w-full py-2 px-4 outline-none bg-neutral-200 rounded-lg' placeholder='Dirección' />
+              <input name='address' defaultValue={user.address} type='text' className='w-full py-2 px-4 outline-none bg-neutral-100 rounded-lg border-black border' placeholder='Dirección' />
             </div>
           </div>
 
@@ -145,7 +146,7 @@ export function ProfilePageRefactor () {
                     <ShoppingItem key={shop.id} shop={shop} />
                   ))
                 )
-              : (<h1 className='text-center text-red-500 font-semibold text-2xl'>No hay compras realizadas</h1>)
+              : (<h1 className='text-center col-span-3 text-red-500 font-semibold text-2xl'>No hay compras realizadas</h1>)
           }
         </div>
       </div>

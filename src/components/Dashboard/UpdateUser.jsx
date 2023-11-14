@@ -3,6 +3,7 @@ import Swal from 'sweetalert2'
 import { RiAddLine, RiCloseLine } from 'react-icons/ri'
 import { useContext } from 'react'
 import { ShopContext } from '../../context/shop'
+import { URL } from '../../constants/url'
 
 export function UpdateUser ({ setShowModal, editUser, setEditUser, setUsers }) {
   const { user, setUser } = useContext(ShopContext)
@@ -12,10 +13,10 @@ export function UpdateUser ({ setShowModal, editUser, setEditUser, setUsers }) {
     const formData = new FormData(form)
     const userdata = Object.fromEntries(formData)
 
-    await axios.post('http://localhost:3000/update-user', { id: editUser.id, ...userdata })
+    await axios.post(`${URL}update-user`, { id: editUser.id, ...userdata })
 
     if (editUser.id === user.id) {
-      const data = await axios.post('http://localhost:3000/get-user', { id: user.id })
+      const data = await axios.post(`${URL}get-user`, { id: user.id })
       window.localStorage.setItem('user', JSON.stringify(data.data))
       setUser(data.data)
     }
@@ -30,7 +31,7 @@ export function UpdateUser ({ setShowModal, editUser, setEditUser, setUsers }) {
     setShowModal(false)
     setEditUser(null)
 
-    const data3 = await axios.get('http://localhost:3000/get-users')
+    const data3 = await axios.get(`${URL}get-users`)
     setUsers(data3.data)
   }
 

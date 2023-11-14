@@ -21,7 +21,7 @@ export function DashboardPage () {
   return (
     <>
       <section className='h-screen grid grid-cols-1 xl:grid-cols-10 pt-20'>
-        <nav className={`xl:col-span-2 z-30 pt-20 xl:pt-0 overflow-y-auto fixed w-[80%] md:w-[40%] lg:w-[30%] xl:w-full h-full ${showMenu ? 'left-0' : '-left-full'} xl:static top-0 px-6 pb-5 duration-200 bg-shop-300`}>
+        <nav className={`xl:col-span-2 z-30 pt-20 xl:pt-0 overflow-y-auto fixed w-[80%] md:w-[40%] lg:w-[30%] xl:w-full h-full ${showMenu ? 'left-0' : '-left-full'} xl:static top-0 px-6 pb-5 duration-150 bg-shop-300`}>
 
           <Title name='Secciones' />
 

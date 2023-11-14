@@ -3,6 +3,7 @@ import { useContext, useEffect, useState } from 'react'
 import { ShopContext } from '../../context/shop'
 import Swal from 'sweetalert2'
 import { RiAddLine, RiCloseLine } from 'react-icons/ri'
+import { URL } from '../../constants/url'
 
 export function UpdateProduct ({ setShowModal, editProduct, setEditProduct }) {
   const { setProducts } = useContext(ShopContext)
@@ -10,7 +11,7 @@ export function UpdateProduct ({ setShowModal, editProduct, setEditProduct }) {
 
   useEffect(() => {
     const getCategories = async () => {
-      const data = await axios.get('http://localhost:3000/get-categories')
+      const data = await axios.get(`${URL}get-categories`)
       setCategories(data.data)
     }
     getCategories()
@@ -26,7 +27,7 @@ export function UpdateProduct ({ setShowModal, editProduct, setEditProduct }) {
     product.category = Number(product.category)
     product.price = Number(product.price)
 
-    await axios.post('http://localhost:3000/update-product', { id: editProduct.id, ...product })
+    await axios.post(`${URL}update-product`, { id: editProduct.id, ...product })
 
     Swal.fire({
       title: 'Actualizar',
@@ -36,7 +37,7 @@ export function UpdateProduct ({ setShowModal, editProduct, setEditProduct }) {
     })
     setShowModal(false)
     setEditProduct(null)
-    const data = await axios.get('http://localhost:3000/get-products')
+    const data = await axios.get(`${URL}get-products`)
     setProducts(data.data)
   }
 

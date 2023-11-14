@@ -4,6 +4,7 @@ import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js'
 import { Pie } from 'react-chartjs-2'
 import { Title } from '../Layout/Title'
 import axios from 'axios'
+import { URL } from '../constants/url'
 
 ChartJS.register(ArcElement, Tooltip, Legend)
 
@@ -13,7 +14,7 @@ export function DashboardHome () {
 
   useEffect(() => {
     const getCategories = async () => {
-      const data = await axios.get('http://localhost:3000/get-categories')
+      const data = await axios.get(`${URL}get-categories`)
       setCategories(data.data)
     }
     getCategories()

@@ -72,7 +72,7 @@ export function ProductItem ({ product, reduceStock }) {
         {
           withoutProducts() &&
             <div className='absolute top-0 left-0 bg-black/25 w-full h-full flex justify-center items-center'>
-              <h1 className='px-5 py-2 bg-white text-red-700 rotate-12 text-5xl font-bold'>Sin Stock</h1>
+              <h1 className='px-5 py-2 bg-white text-red-500 rotate-12 text-5xl font-bold'>Sin Stock</h1>
             </div>
         }
       </div>

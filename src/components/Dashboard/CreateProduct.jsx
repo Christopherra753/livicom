@@ -3,6 +3,7 @@ import { useContext, useEffect, useState } from 'react'
 import { ShopContext } from '../../context/shop'
 import Swal from 'sweetalert2'
 import { RiAddLine, RiCloseLine } from 'react-icons/ri'
+import { URL } from '../../constants/url'
 
 export function CreateProduct ({ setShowModal }) {
   const { setProducts } = useContext(ShopContext)
@@ -10,7 +11,7 @@ export function CreateProduct ({ setShowModal }) {
 
   useEffect(() => {
     const getCategories = async () => {
-      const data = await axios.get('http://localhost:3000/get-categories')
+      const data = await axios.get(`${URL}get-categories`)
       setCategories(data.data)
     }
     getCategories()
@@ -26,7 +27,7 @@ export function CreateProduct ({ setShowModal }) {
     newProduct.category = Number(newProduct.category)
     newProduct.price = Number(newProduct.price)
 
-    const data = await axios.post('http://localhost:3000/create-product', newProduct)
+    const data = await axios.post(`${URL}create-product`, newProduct)
 
     if (data.data.id) {
       Swal.fire({
@@ -36,7 +37,7 @@ export function CreateProduct ({ setShowModal }) {
         timer: 1500
       })
     }
-    const data3 = await axios.get('http://localhost:3000/get-products')
+    const data3 = await axios.get(`${URL}get-products`)
     setProducts(data3.data)
   }
 

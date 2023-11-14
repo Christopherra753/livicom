@@ -27,22 +27,22 @@ export function AboutPage () {
                 <div className='p-4 pb-6 flex justify-center flex-col items-center'>
                   <img className='md:block hidden' src='https://i.ibb.co/FYTKDG6/Rectangle-118-2.png' alt='Alexa featured Image' />
                   <img className='md:hidden block' src='https://i.ibb.co/zHjXqg4/Rectangle-118.png' alt='Alexa featured Image' />
-                  <p className='font-medium text-xl leading-5 text-shop-200  mt-4'>Alexa</p>
+                  <p className='font-medium text-xl leading-5 text-shop-200  mt-4'>Alejandra</p>
                 </div>
                 <div className='p-4 pb-6 flex justify-center flex-col items-center'>
                   <img className='md:block hidden' src='https://i.ibb.co/fGmxhVy/Rectangle-119.png' alt='Olivia featured Image' />
                   <img className='md:hidden block' src='https://i.ibb.co/NrWKJ1M/Rectangle-119.png' alt='Olivia featured Image' />
-                  <p className='font-medium text-xl leading-5 text-shop-200  mt-4'>Olivia</p>
+                  <p className='font-medium text-xl leading-5 text-shop-200  mt-4'>Anyela</p>
                 </div>
                 <div className='p-4 pb-6 flex justify-center flex-col items-center'>
                   <img className='md:block hidden' src='https://i.ibb.co/Pc6XVVC/Rectangle-120.png' alt='Liam featued Image' />
                   <img className='md:hidden block' src='https://i.ibb.co/C5MMBcs/Rectangle-120.png' alt='Liam featued Image' />
-                  <p className='font-medium text-xl leading-5 text-shop-200  mt-4'>Liam</p>
+                  <p className='font-medium text-xl leading-5 text-shop-200  mt-4'>Luis</p>
                 </div>
                 <div className='p-4 pb-6 flex justify-center flex-col items-center'>
                   <img className='md:block hidden' src='https://i.ibb.co/7nSJPXQ/Rectangle-121.png' alt='Elijah featured image' />
                   <img className='md:hidden block' src='https://i.ibb.co/ThZBWxH/Rectangle-121.png' alt='Elijah featured image' />
-                  <p className='font-medium text-xl leading-5 text-shop-200  mt-4'>Elijah</p>
+                  <p className='font-medium text-xl leading-5 text-shop-200  mt-4'>Mateo</p>
                 </div>
               </div>
             </div>

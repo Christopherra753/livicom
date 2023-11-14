@@ -9,6 +9,7 @@ import axios from 'axios'
 import Swal from 'sweetalert2'
 import { CreateProduct } from './Dashboard/CreateProduct'
 import { UpdateProduct } from './Dashboard/UpdateProduct'
+import { URL } from '../constants/url'
 
 export function DashboardProducts ({ setShowModal, showModal }) {
   const { products, setProducts } = useContext(ShopContext)
@@ -28,8 +29,8 @@ export function DashboardProducts ({ setShowModal, showModal }) {
       confirmButtonText: 'Eliminar'
     }).then(async (result) => {
       if (result.isConfirmed) {
-        await axios.post('http://localhost:3000/delete-product', { id })
-        const data = await axios.get('http://localhost:3000/get-products')
+        await axios.post(`${URL}delete-product`, { id })
+        const data = await axios.get(`${URL}get-products`)
         setProducts(data.data)
         Swal.fire(
           'Eliminar',

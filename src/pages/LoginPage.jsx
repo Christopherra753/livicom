@@ -3,6 +3,7 @@ import { ShopContext } from '../context/shop'
 import Swal from 'sweetalert2'
 import { useNavigate } from 'react-router-dom'
 import axios from 'axios'
+import { URL } from '../constants/url'
 
 export function LoginPage () {
   const { setUser } = useContext(ShopContext)
@@ -15,7 +16,7 @@ export function LoginPage () {
     const formData = new FormData(form)
     const user = Object.fromEntries(formData)
 
-    const data = await axios.post('http://localhost:3000/login', user)
+    const data = await axios.post(`${URL}login`, user)
 
     if (!data.data.result) {
       return Swal.fire({
@@ -26,7 +27,7 @@ export function LoginPage () {
       })
     }
 
-    const data2 = await axios.post('http://localhost:3000/get-user', { id: data.data.result })
+    const data2 = await axios.post(`${URL}get-user`, { id: data.data.result })
 
     setUser(data2.data)
 

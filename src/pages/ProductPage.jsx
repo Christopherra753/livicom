@@ -4,6 +4,7 @@ import { BiFilterAlt, BiSearch } from 'react-icons/bi'
 import { Title } from '../Layout/Title'
 import { ShopContext } from '../context/shop'
 import axios from 'axios'
+import { URL } from '../constants/url'
 
 export function ProductPage () {
   const { products, setProducts } = useContext(ShopContext)
@@ -19,7 +20,7 @@ export function ProductPage () {
 
   useEffect(() => {
     const getCategories = async () => {
-      const data = await axios.get('http://localhost:3000/get-categories')
+      const data = await axios.get(`${URL}get-categories`)
       setCategories(data.data)
     }
     getCategories()
@@ -56,7 +57,7 @@ export function ProductPage () {
   return (
     <>
       <div className=' h-screen grid grid-cols-1 xl:grid-cols-10 pt-20'>
-        <div className={`xl:col-span-2 z-20 pt-20 xl:pt-0 overflow-y-auto fixed w-full md:w-[50%] xl:w-full h-full ${showMenu ? 'left-0' : '-left-full'} xl:static top-0 px-6 pb-5 border-r bg-white`}>
+        <div className={`xl:col-span-2 z-20 pt-20 xl:pt-0 overflow-y-auto fixed w-full md:w-[40%] xl:w-full h-full ${showMenu ? 'left-0' : '-left-full'} xl:static top-0 px-6 pb-5 border-r bg-white duration-150`}>
           <Title name='Filtros' />
           <div className='flex flex-col gap-5'>
             <div>

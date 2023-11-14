@@ -3,6 +3,7 @@ import { ShopContext } from '../context/shop'
 import Swal from 'sweetalert2'
 import { useNavigate } from 'react-router-dom'
 import axios from 'axios'
+import { URL } from '../constants/url'
 
 export function RegisterPage () {
   const { setUser } = useContext(ShopContext)
@@ -16,7 +17,7 @@ export function RegisterPage () {
     const formData = new FormData(formulario)
 
     const newUser = Object.fromEntries(formData)
-    const data = await axios.post('http://localhost:3000/verify-email', { email: newUser.email })
+    const data = await axios.post(`${URL}verify-email`, { email: newUser.email })
     if (data.data.result) {
       Swal.fire({
         title: 'Registro',
@@ -35,8 +36,8 @@ export function RegisterPage () {
       })
       return
     }
-    const data2 = await axios.post('http://localhost:3000/create-user', { ...newUser, rol: 'user' })
-    const data3 = await axios.post('http://localhost:3000/get-user', { id: data2.data.id })
+    const data2 = await axios.post(`${URL}create-user`, { ...newUser, rol: 'user' })
+    const data3 = await axios.post(`${URL}get-user`, { id: data2.data.id })
 
     setUser(data3.data)
     window.localStorage.setItem('user', JSON.stringify(data3.data))
