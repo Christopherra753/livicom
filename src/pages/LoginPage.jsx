@@ -44,18 +44,18 @@ export function LoginPage () {
   }
 
   return (
-    <div className='max-w-screen-md mx-auto h-screen pt-20 grid items-center'>
+    <div className='max-w-screen-md mx-auto h-screen pt-20 grid items-center px-4'>
       <form onSubmit={handleSubmit} className='p-5 border rounded-lg shadow-lg'>
-        <h1 className='text-5xl text-black text-center mb-10 font-bold'>Inicia ahora</h1>
-        <div className='mb-6'>
-          <label htmlFor='email' className='block mb-2 text-sm font-medium text-gray-500 dark:text-white'>Correo</label>
-          <input name='email' type='email' id='email' className=' border border-gray-300 text-gray-900 text-sm rounded-lg focus:outline-none focus:border-blue-500 block w-full p-2.5 ' placeholder='john.doe@company.com' required />
+        <h1 className='text-3xl md:text-5xl text-black text-center mb-10 font-bold'>Inicia ahora</h1>
+        <div className='flex flex-col gap-2 mb-6'>
+          <label htmlFor='email' className='text-sm text-shop-200 font-semibold'>Correo:</label>
+          <input name='email' type='email' id='email' className='border rounded-lg px-2.5 py-1.5 outline-none focus:border-shop-100' placeholder='Ingrese su correo' required />
         </div>
-        <div className='mb-6'>
-          <label htmlFor='password' className='block mb-2 text-sm font-medium text-gray-500 dark:text-white'>Contraseña</label>
-          <input name='password' type='password' id='password' className=' border border-gray-300 text-gray-900 text-sm rounded-lg focus:outline-none focus:border-blue-500 block w-full p-2.5 ' placeholder='•••••••••' required />
+        <div className='flex flex-col gap-2 mb-6'>
+          <label htmlFor='password' className='text-sm text-shop-200 font-semibold'>Password:</label>
+          <input name='password' type='password' id='password' className='border rounded-lg px-2.5 py-1.5 outline-none focus:border-shop-100' placeholder='Ingrese su contraseña' required />
         </div>
-        <button type='submit' className='text-white bg-blue-700 hover:bg-blue-800 focus:outline-none  font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center'>Iniciar</button>
+        <button type='submit' className='bg-shop-200 text-white px-4 py-2 rounded-lg w-full text-lg md:text-2xl'>Iniciar</button>
       </form>
     </div>
   )

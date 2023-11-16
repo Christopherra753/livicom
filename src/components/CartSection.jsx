@@ -102,7 +102,7 @@ export function CartSection ({ setShowCart, showCart }) {
   return (
     <div className={`absolute bg-black/50 top-0 pointer-events-none left-0 w-full h-screen flex justify-end z-50 duration-500 ${showCart ? 'opacity-100 pointer-events-auto' : 'opacity-0'} '`}>
       <div className={`bg-white max-w-md w-full h-screen flex flex-col relative duration-500 ${showCart ? 'translate-x-0' : 'translate-x-full'}`}>
-        <Title name='Carrito de Compras' />
+        <Title name='Carrito' />
         <div className='flex-1 overflow-y-auto border-t border-b border-black'>
           {
             cart.map(product => (
@@ -115,9 +115,9 @@ export function CartSection ({ setShowCart, showCart }) {
             <h2 className='text-2xl text-shop-200 font-semibold'>Subtotal</h2>
             <p className='text-base text-gray-800 font-semibold'>S/.{calculateTotal()}</p>
           </div>
-          <button className='text-white bg-shop-200/90 hover:bg-shop-200 px-4 text-base' onClick={buyProducts}>Finalizar Compra</button>
+          <button className='text-white bg-shop-200/90 hover:bg-shop-200 px-7 text-base rounded-lg' onClick={buyProducts}>Finalizar Compra</button>
         </div>
-        <button onClick={() => setShowCart(false)} className='absolute top-5 right-5 bg-red-500 rounded-full hover:bg-red-600 duration-150'>
+        <button onClick={() => setShowCart(false)} className='absolute top-5 right-5 bg-shop-200/80 rounded-full hover:bg-shop-200 duration-150'>
           <BiX className='text-4xl text-white' />
         </button>
       </div>
